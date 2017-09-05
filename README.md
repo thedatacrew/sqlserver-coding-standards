@@ -32,8 +32,6 @@ These are based on, but deviate in some way from sqlstyle.guide.
 
 If you have forked this styleguide and you'd like to be mentioned in this readme then please open a pull request adding it below in alphabetical order with a URL and short description of your deviance.
 
-* [Lumos Labs](https://github.com/lumoslabs/sqlstyle.guide) - removed the river, Redshift, etc. [www](http://engineering.lumosity.com/sqlstyle.guide)
-
 [md-lang]: http://daringfireball.net/projects/markdown/
 [jekyll]: http://jekyllrb.com/
 [gh-pages]: https://pages.github.com/
