@@ -4,14 +4,18 @@
 
 You can use this set of guidelines, [fork them][fork] or make your own - the key here is that you pick a style and stick to it. To suggest changes or fix bugs please open an [issue][issue] or [pull request][pull] on GitHub.
 
-These guidelines are designed to be compatible with Microsoft SQL Server and used in conjunction with Red Gate tooling [SQL Prompt](http://www.red-gate.com/products/sql-development/sql-prompt/ "SQL Prompt") and [SQL Source Control](https://www.red-gate.com/products/sql-development/sql-source-control/ "SQL Source Control")
+These guidelines are designed to be compatible with Microsoft SQL Server and used in conjunction with Red Gate SQL Tooling [SQL Prompt][sql-prompt] and [SQL Source Control][sql-source-control].
 
 They use some standard Microsoft naming conventions that will assist when coding in ORM's such as LINQ2SQL or EntityFramework i.e. conventions over configurations. Also when using SSRS, SSAS & Tabluar data models the Table and Column naming standards will assist the UI layouts.
 
-It is easy to include this guide in [Markdown format][dl-md] as a part of a project's code base or reference it here for anyone on the project to freely
-read—much harder with a physical book.
+It is easy to include this guide in [Markdown format][dl-md] as a part of a project's code base or reference it here for anyone on the project to freely read—much harder with a physical book.
 
 The format is based on some of the work at [http://www.sqlstyle.guide][sqlstyleguide].
+
+SQL Server Style Guide by [The Data Crew][thedatacrew] is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License][licence].
+
+Based on a work at [http://www.sqlstyle.guide][sqlstyleguide].
+
 
 ## General ##
 
@@ -134,24 +138,19 @@ GO
 
 ### Uniform suffixes
 
-The following suffixes have a universal meaning ensuring the columns can be read
-and understood easily from SQL code. Use the correct suffix where appropriate
+The following suffixes have a universal meaning ensuring the columns can be read and understood easily from SQL code. Use the correct suffix where appropriate
 
-First Header  | Second Header
+Suffix  | Description
 ------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
-
-
-- ID , a unique identifier such as a column that is a primary key.
-- Status value or some other status of any type such as publication_status.
-- Total -the total or sum of a collection of values.
-- Num denotes the field contains any kind of number.
-- Name  signifies a name such as first_name.
-- Sequance contains a contiguous sequence of values.
-- Date denotes a column that contains the date of something.
-- Tally a count.
-- Size the size of something such as a file size or clothing.
+ID |  a unique identifier such as a column that is a primary key.
+Status | value or some other status of any type such as publication_status.
+Total | the total or sum of a collection of values.
+Num | denotes the field contains any kind of number.
+Name | signifies a name such as first_name.
+Sequance | contains a contiguous sequence of values.
+Date | denotes a column that contains the date of something.
+Tally | a count.
+Size | the size of something such as a file size or clothing.
 
 
 ### Views
@@ -177,10 +176,28 @@ Content Cell  | Content Cell
 
 ### Foreign Keys 
 
--
-
 
 ## Query syntax
 
-[fork]: https://github.com/thedatacrew/sqlstyle.guide/fork
+[thedatacrew]: https://thedatacrew.com
+    "TheDataCrew.com"
+[issue]: https://github.com/thedatacrew/SqlServer.Coding.Standards/issues
+    "SQL style guide issues on GitHub"
+[fork]: https://github.com/thedatacrew/SqlServer.Coding.Standards/fork/
     "Fork SQL style guide on GitHub"
+[pull]: https://github.com/thedatacrew/SqlServer.Coding.Standards/pulls/
+    "SQL style guide pull requests on GitHub"
+[dl-md]: https://raw.githubusercontent.com/thedatacrew/SqlServer.Coding.Standards/master/documentation/sqlstyle.guide.md
+    "Download the guide in Markdown format"
+[reserved-keywords]: #reserved-keyword-reference
+    "Reserved keyword reference" 
+[sqlstyleguide]: http://www.sqlstyle.guide
+    "SQL style guide by Simon Holywell"
+[sqlserverstyleguide]: http://www.thedatacrew.com/sqlserverstyleguide
+    "SQL Server Style Guide by The Data Crew"
+[licence]: http://creativecommons.org/licenses/by-sa/4.0/
+    "Creative Commons Attribution-ShareAlike 4.0 International License"
+[sql-prompt]: http://www.red-gate.com/products/sql-development/sql-prompt/
+	"Red Gate SQL Prompt - Write, format, share and refactor your SQL effortlessly"
+[sql-source-control]: https://www.red-gate.com/products/sql-development/sql-source-control/ 
+	"SQL Source Control - Connect your database to your version control system"
