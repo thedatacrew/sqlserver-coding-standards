@@ -1,6 +1,6 @@
 # SQL Server Style Guide
 
-**[☛ Read the guide](http://www.thedatacrew.com/sqlserverstyleguide)**
+**[☛ Read the guide](https://github.com/thedatacrew/SqlServer.Coding.Standards/blob/master/documentation/sqlstyle.guide.md)**
 
 ---
 
