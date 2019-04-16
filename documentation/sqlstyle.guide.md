@@ -150,7 +150,7 @@ Status | value or some other status of any type such as publication_status.
 Total | the total or sum of a collection of values.
 Num | denotes the field contains any kind of number.
 Name | signifies a name such as first_name.
-Sequance | contains a contiguous sequence of values.
+Sequence | contains a contiguous sequence of values.
 Date | denotes a column that contains the date of something.
 Tally | a count.
 Size | the size of something such as a file size or clothing.
