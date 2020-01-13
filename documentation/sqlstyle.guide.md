@@ -22,16 +22,18 @@ Based on a work at [http://www.sqlstyle.guide][sqlstyleguide].
 ### Do
 
 - Use consistent and descriptive identifiers and names.
-- Use SQL Prompt DataCrew Formatting Style which make SQL code formatted to the standard required and easier to read.
+- Use SQL Prompt Formatting Style which make SQL code formatted to the standard required and easier to read.
 - Use Source Control, commit regularly & document your changes
 - Document your functional code blocks in Procedures and Functions but don't document change history in there, that's what source control is for.
 - Run a **Find Invalid Objects** on the database before a commit to source control.
 - Remove redundant code, don't just comment it out. Track the history in source control.
+- Document your columns use extened properties.
 
 ### Avoid
 
 - Creating copy's of database objects to track history, keep the database clean.
 - Don't commit a broken database to source control.
+- Using abbreviations for names.
 
 ## Naming conventions
 
@@ -110,7 +112,7 @@ CREATE TABLE [dbo].[Invoice](
 GO
 ```
 
-- The primary identifier for the table must be TableNameID with ID in uppercase.
+- The primary identifier for the table must be TableNameID with ID in uppercase. This is a standard notation used by many ORM's to identify Primary & Foreign Keys by Convention. 
 - When used a business Key identifier for the table where surrogate keys are used must be TableNameBK with BK in uppercase.
 - Every table must contain the fields LastModifiedBy, LastModifiedDate for audit purposes.
 - The PrimaryKey must be first in the table followed by the Foreign Keys in alphabetical order. i.e. followed by the Business Key's in alphabetical order
@@ -164,6 +166,7 @@ Size | the size of something such as a file size or clothing.
 - Do not name a table the same as one of its columns and vice-versa.
 - When creating a Many-Many view, create the name of a relationship view as PrimaryTableSecondaryTable in a singular naming.
 - Don't nest views in views. A view should target underlying tables only otherwise too many dependence exists and one change can break multiple things.
+- Alias for Columns should be a Single Word i.e. MyColumnAlias or if spaces are required quoted with [My Column Alias]. String literals 'MyColumnAlias' or 'My Column Alias' or "MyColumnAlias" or "My Column Alias" are deprecated and should not be used. Any existing deprecated String literals shoudl be replaced.
 
 ### Stored procedures
 
