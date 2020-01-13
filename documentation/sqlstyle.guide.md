@@ -61,12 +61,28 @@ FROM   InvoiceItems AS II
 - Do not name a table the same as one of its columns and vice-versa.
 - When creating a Many-Many relationship table, create the name of a relationship table as PrimaryTableSecondaryTable in a singular naming i.e. Customer.
 - Where possible use a natural key for the primary key from the data set rather than a surrogate key.
-- 
 
 #### Columns
 
 - Always use the singular name.
 - Do not add a column with the same name as its table and vice versa.
+- With string data types, VARCHAR, NVARCHAR, CHAR, NCHAR specify the length on a byte boundary. i.e. to the nearest 8 BITS. It makes the SQL easier to read, allows you to easily remember data sizes and looks nice :wink:.
+
+```sql
+	[InvoiceBK] [NVARCHAR](32) NULL,
+	[InvoiceTypeBK] [NVARCHAR](64) NULL,
+	[LegalEntityBK] [NVARCHAR](16) NULL,
+	[CountryBK] [NVARCHAR](2) NOT NULL,
+	[CurrencyBK] [NVARCHAR](8) NULL,
+	[CountryName] [NVARCHAR](64) NOT NULL,
+	[IsoCode] [NVARCHAR](2) NOT NULL,
+	[UnCode] [NVARCHAR](4) NOT NULL,
+	[NumericCode] [NVARCHAR](4) NOT NULL,
+	[IsEuMember] [BIT] NOT NULL,
+	[Continent] [NVARCHAR](64) NULL,
+	[Region] [NVARCHAR](64) NULL,	
+```
+
 - Always use PascalCase except where you have more than 1 Foreign Key Reference to the same table. use an underscore to highlight its function i.e. CustomerID_Order and CustomerID_Invoice both reference the Customer table and the column CustomerID
  
 ```sql
@@ -139,6 +155,7 @@ GO
 [RowHashType1] [binary] (32) NOT NULL, -- SCD (Slowly Changing Dimension) Type 1 Changes Hash
 [RowHashType2] [binary] (32) NOT NULL, -- SCD (Slowly Changing Dimension) Type 2 Changes Hash
 ```
+- Use HASHBYTES & 'SHA2_256' as a minimum Hasing
 
 - The PrimaryKey must be first in the table followed by the Foreign Keys in alphabetical order. i.e. followed by the Business Key's in alphabetical order
 - Avoid GUID's as primary keys unless yoiu specifically require them. The performance as a clustered index isn't good. 
@@ -148,7 +165,7 @@ CREATE TABLE [dbo].[Country](
 	[CountryID] [INT] NOT NULL,
 	[CurrencyID] [INT] NULL,
 	[CountryBK] [NVARCHAR](2) NOT NULL,
-	[CurrencyBK] [NCHAR](10) NULL,
+	[CurrencyBK] [NVARCHAR](8) NULL,
 	[CountryName] [NVARCHAR](64) NOT NULL,
 	[IsoCode] [NVARCHAR](2) NOT NULL,
 	[UnCode] [NVARCHAR](4) NOT NULL,
