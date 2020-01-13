@@ -102,8 +102,13 @@ CREATE TABLE [dbo].[Invoice](
 	[GbpDiscount] [MONEY] NULL,
 	[GbpNetAmount] [MONEY] NULL,
 	[GbpGrossAmount] [MONEY] NULL,
-	[RowHashType1] [BINARY](32) NULL,
-	[DateLastModified] [DATETIME2](0) NOT NULL,
+	[RowHashType1] [binary] (32) NOT NULL,
+	[LoadedOn] [datetime2] (0) NOT NULL,
+	[LoadedBy] [nvarchar] (64) NOT NULL,
+	[CreatedOn] [datetime2] NOT NULL,
+	[CreatedBy] [nvarchar] (64) NOT NULL,
+	[ModifiedOn] [datetime2] NOT NULL,
+	[ModifiedBy] [nvarchar] (64) NOT NULL
  CONSTRAINT [PK_Invoice] PRIMARY KEY CLUSTERED 
 (
 	[InvoiceID] ASC
@@ -114,7 +119,27 @@ GO
 
 - The primary identifier for the table must be TableNameID with ID in uppercase. This is a standard notation used by many ORM's to identify Primary & Foreign Keys by Convention. 
 - When used a business Key identifier for the table where surrogate keys are used must be TableNameBK with BK in uppercase.
-- Every table must contain the fields LastModifiedBy, LastModifiedDate for audit purposes.
+- Every table must contain the following date fields for audit purposes.
+
+```sql
+[CreatedOn] [datetime2] NOT NULL,
+[CreatedBy] [nvarchar] (64) NOT NULL,
+[ModifiedOn] [datetime2] NOT NULL,
+[ModifiedBy] [nvarchar] (64) NOT NULL
+```
+- If you are building a Data Warehouse platform every table shoudld also have the following date fields for ETL audit purposes.
+
+```sql
+[LoadedOn] [datetime2] (0) NOT NULL,
+[LoadedBy] [nvarchar] (64) COLLATE Latin1_General_CI_AS NOT NULL,
+```
+- If you are building a Data Warehouse platform every table shoudld also have the following Hash fields for ETL audit purposes.
+
+```sql
+[RowHashType1] [binary] (32) NOT NULL, -- SCD (Slowly Changing Dimension) Type 1 Changes Hash
+[RowHashType2] [binary] (32) NOT NULL, -- SCD (Slowly Changing Dimension) Type 2 Changes Hash
+```
+
 - The PrimaryKey must be first in the table followed by the Foreign Keys in alphabetical order. i.e. followed by the Business Key's in alphabetical order
 - Avoid GUID's as primary keys unless yoiu specifically require them. The performance as a clustered index isn't good. 
 
@@ -131,13 +156,130 @@ CREATE TABLE [dbo].[Country](
 	[IsEuMember] [BIT] NOT NULL,
 	[Continent] [NVARCHAR](64) NULL,
 	[Region] [NVARCHAR](64) NULL,
-	[LastModifiedBy] [NVARCHAR](64) NULL,
-	[LastModifiedDate] [DATETIME2](0) NULL,
+	[RowHashType1] [binary] (32) NOT NULL,
+	[LoadedOn] [datetime2] (0) NOT NULL,
+	[LoadedBy] [nvarchar] (64) NOT NULL,
+	[CreatedOn] [datetime2] NOT NULL,
+	[CreatedBy] [nvarchar] (64) NOT NULL,
+	[ModifiedOn] [datetime2] NOT NULL,
+	[ModifiedBy] [nvarchar] (64) NOT NULL
  CONSTRAINT [PK_Country] PRIMARY KEY CLUSTERED 
 (
 	[CountryID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
+GO
+```
+
+### SCD (Slowly Changing Dimension) Type 2 Columns
+
+For tables that track changes the following columns must be included.
+
+```sql
+[RowHashType1] [binary] (32) NULL,
+[RowHashType2] [binary] (32) NULL,
+[LoadedOn] [datetime2] (0) NOT NULL,
+[LoadedBy] [nvarchar] (64) NOT NULL,
+[CreatedOn] [datetime2] (0) NOT NULL,
+[CreatedBy] [nvarchar] (64) NOT NULL,
+[ModifiedOn] [datetime2] (0) NOT NULL,
+[DateValidFrom] [datetime2] (0) NOT NULL,
+[DateValidTo] [datetime2] (0) NOT NULL,
+[IsCurrent] [nchar] (10) NOT NULL
+```
+
+e.g. An Employee Table that tracks Type1 & Type 2 Changes may look like this.
+
+```sql
+CREATE TABLE [Dimension].[Employee]
+(
+[EmployeeID] [int] NOT NULL,
+[EmployeeID_Manager] [int] NULL,
+[TeamID] [int] NULL,
+[SourceSystemID] [int] NULL,
+[Title] [nvarchar] (32) NULL,
+[Firstname] [nvarchar] (32) NULL,
+[Lastname] [nvarchar] (32) NULL,
+[Employee Name] [nvarchar] (64) NULL,
+[Team] [nvarchar] (64) COLLATE NULL,
+[Department] [nvarchar] (64) NULL,
+[Date Employment Started] [date] NULL,
+[Date Employment Ended] [date] NULL,
+[Job Title] [nvarchar] (128) NULL,
+[Holiday Entitlement] [decimal] (3, 1) NULL,
+[Holiday Adjustment] [decimal] (3, 1) NULL,
+[Holiday Purchased Adjustment] [decimal] (3, 1) NULL,
+[Extension] [nvarchar] (16) NULL,
+[Internal Email] [nvarchar] (128) NULL,
+[RowHashType1] [binary] (32) NULL,
+[RowHashType2] [binary] (32) NULL,
+[LoadedOn] [datetime2] (0) NOT NULL,
+[LoadedBy] [nvarchar] (64) NOT NULL,
+[CreatedOn] [datetime2] (0) NOT NULL,
+[CreatedBy] [nvarchar] (64) NOT NULL,
+[ModifiedOn] [datetime2] (0) NOT NULL,
+[DateValidFrom] [datetime2] (0) NOT NULL,
+[DateValidTo] [datetime2] (0) NOT NULL,
+[IsCurrent] [nchar] (10) NOT NULL
+) ON [PRIMARY]
+GO
+ALTER TABLE [Dimension].[Employee] ADD CONSTRAINT [PK_Employee] PRIMARY KEY CLUSTERED  ([EmployeeID]) ON [PRIMARY]
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'User that Created the Record on the Source System.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'CreatedBy'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date the Record was Created on the Source System.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'CreatedOn'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date Employee ended in the Business.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Date Employment Ended'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date Employee started in the Business.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Date Employment Started'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date the record is valid from.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'DateValidFrom'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date the record is valid to.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'DateValidTo'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Department that the Employee is a member of in the Business.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Department'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Standard formated full name of the Employee i.e. Lastname, Firstname Title.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Employee Name'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Employee Surrogate Primary Key from the Data Warehouse.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'EmployeeID'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Employee Foreign Key for the manager from the Data Warehouse.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'EmployeeID_Manager'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Employee''s internal telephone extension number.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Extension'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Firstname / Given name of the Employee.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Firstname'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Annual Holiday Adjustment in days (e.g. increased with length of service).', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Holiday Adjustment'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Annual Holiday Entitlement in days.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Holiday Entitlement'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Annual Holiday Purchased Adjustment (employee has purchased additional days).', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Holiday Purchased Adjustment'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Employee''s internal email address.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Internal Email'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Flag to mark the current valid record.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'IsCurrent'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Job Title.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Job Title'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Lastname / Surname of the Employee.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Lastname'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'User for the ETL System that Loaded or Modified the Record.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'LoadedBy'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date the ETL System Loaded or Modified the Record.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'LoadedOn'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Date the Record was Modified on the Source System.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'ModifiedOn'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'A SHA2-256 Hash of the SCD Type 1 Columns in the Table.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'RowHashType1'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'A SHA2-256 Hash of the SCD Type 2 Columns in the Table.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'RowHashType2'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Source System Foreign Key.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'SourceSystemID'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Team that the Employee is a member of in the Business.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Team'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Team Foreign Key.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'TeamID'
+GO
+EXEC sp_addextendedproperty N'MS_Description', N'Title (Mr,Ms,Mrs,Miss,Dr,Prof.) etc of the Employee.', 'SCHEMA', N'Dimension', 'TABLE', N'Employee', 'COLUMN', N'Title'
 GO
 ```
 
