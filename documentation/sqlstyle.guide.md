@@ -355,9 +355,9 @@ REFERENCES [dbo].[Country] ([CountryID])
 
 This are broad recommendations, you should always test your specific senario.
 
-- Indexes should start with any columns in used in the ```sql WHERE``` clause followed by the columns in your ```sql JOIN``` condition. 
-- Include any columns in an ```sql ORDER BY``` clause
-- Make the index a covering index by using ```sql INCLUDE``` option using the columns in your ```sql SELECT``` list. This removes the lookup step
+- Indexes should start with any columns in used in the ```WHERE``` clause followed by the columns in your ```JOIN``` condition. 
+- Include any columns in an ```ORDER BY``` clause
+- Make the index a covering index by using ```INCLUDE``` option using the columns in your ```SELECT``` list. This removes the lookup step
 
 Remember adding more indexes to tables and adding more columns to an existing index will require more resources to update these indexes.
 
