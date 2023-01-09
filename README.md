@@ -10,7 +10,7 @@ The guide is written in [Markdown][md-lang] and uses [Jekyll][jekyll] via [GitHu
 
 ## Sources
 
-The markdown source for the guide can be found in [_includes/sqlstyle.guide.md][md]
+The markdown source for the guide can be found in **[the guide](https://raw.githubusercontent.com/thedatacrew/sqlserver-coding-standards/master/documentation/sqlstyle.guide.md)**
 
 ## Installing for local development
 
